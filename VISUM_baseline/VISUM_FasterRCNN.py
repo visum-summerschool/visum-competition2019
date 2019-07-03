@@ -1,25 +1,17 @@
-#import os
-#import numpy as np
 import torch
 import torch.utils.data
-#import h5py
-#import pickle
-#from PIL import Image
 import torchvision
-#from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection import FasterRCNN
 from torchvision.models.detection.rpn import AnchorGenerator
 from utils_.engine import train_one_epoch, evaluate
 from utils_ import utils
 from utils_ import transforms as T
-#import visdom_utils
-#from visdom import Visdom
-from utils_.visum_utils import Dataset#, VisdomLinePlotter
+from utils_.visum_utils import VisumData
 
 
 
-DATA_DIR = '/data/DB/VISUM_newdata_baseline'
-SAVE_MODEL = '/home/wjsilva19/VISUM_baseline/Models/fasterRCNN_model'
+DATA_DIR = '/home/master/dataset/train'
+SAVE_MODEL = './'
 
 
 # Data augmentation
@@ -55,8 +47,8 @@ model = FasterRCNN(backbone,
 print(model)
 
 # use our dataset and defined transformations
-dataset = Dataset(DATA_DIR, 'RGB', 'train', transforms=get_transform(train=True))
-dataset_val = Dataset(DATA_DIR, 'RGB', 'train', transforms=get_transform(train=False))
+dataset = VisumData(DATA_DIR, modality='rgb', transforms=get_transform(train=True))
+dataset_val = VisumData(DATA_DIR, modality='rgb', transforms=get_transform(train=False))
 
 # split the dataset in train and test set
 torch.manual_seed(1)
@@ -95,8 +87,4 @@ for epoch in range(num_epochs):
     # evaluate on the test dataset
     evaluator = evaluate(model, data_loader_val, device=device)
 
-torch.save(model, SAVE_MODEL)  
-
-
-
-
+torch.save(model, SAVE_MODEL)

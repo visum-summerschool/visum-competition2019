@@ -1,47 +1,62 @@
 import os
-import h5py
 import numpy as np
 import torch
+from torch.utils.data import Dataset
 from PIL import Image
-import utils_.visdom_utils
 from visdom import Visdom
+import csv
 
 
-class Dataset(torch.utils.data.Dataset):
-    def __init__(self, root, modality, dset, transforms=None):
-        self.root = root
+class VisumData(Dataset):
+    def __init__(self, path, modality='all', transforms=None):
+        self.path = path
         self.transforms = transforms
-        self.modality = modality
-        # load all image files, sorting them to
-        # ensure that they are aligned
-        self.img_file = os.path.join(root, 'bosch_' + dset + '.hdf5')
-        self.ann_file = os.path.join(root, 'bosch_' + dset + '_' + modality + '_ann.csv')
-        with h5py.File(self.img_file, 'r') as hf:
-            self.n_imgs = hf[modality].shape[0]
-        with open(self.ann_file, 'rb') as hf:
-            self.ann = np.loadtxt(self.ann_file, delimiter=',')
-            
-    def __getitem__(self, idx):
-        # load images and masks
-        with h5py.File(self.img_file, 'r') as hf:
-            img = hf[self.modality][idx]
-        # get bounding box coordinates for each mask
-        img = Image.fromarray((img*255).astype('uint8'))
 
-        ann = self.ann[self.ann[:,0] == idx]
+        assert modality in ['rgb', 'nir', 'all'], \
+            'modality should be on of the following: \'rgb\', \'nir\', \'all\''
+        self.modality = modality
+
+        if self.modality in ['rgb', 'nir']:  # load only RGB or NIR images
+            self.image_files = [f for f in os.listdir(path) if ('.jpg' in f) and (self.modality.upper() in f)]
+        else:  # load all images (RGB and NIR)
+            self.image_files = [f for f in os.listdir(path) if '.jpg' in f]
+
+        self.annotations = dict()
+        with open(os.path.join(self.path, 'annotation.csv')) as csv_file:
+            for row in csv.reader(csv_file, delimiter=','):
+                file_name = row[0]
+                obj = [float(value) for value in row[1:5]]
+                obj.append(int(row[5]))
+
+                if file_name in self.annotations:
+                    self.annotations[file_name].append(obj)
+                else:
+                    self.annotations[file_name] = [obj]
+
+        self.class_names = {
+            0: 'book', 1: 'bottle', 2: 'box', 3: 'cellphone',
+            4: 'cosmetics', 5: 'glasses', 6: 'headphones', 7: 'keys',
+            8: 'wallet', 9: 'watch', -1: 'n.a.'}
+
+    def __getitem__(self, idx):
+        img = Image.open(os.path.join(self.path, self.image_files[idx]))
+
+        ann_key = self.image_files[idx].replace('NIR', 'RGB')
+        ann = self.annotations.get(ann_key, [])
+
         num_objs = len(ann)
         boxes = list()
         labels = list()
         for ii in range(num_objs):
-            boxes.append(ann[ii][1:5])
-            labels.append(ann[ii][5])
+            boxes.append(ann[ii][0:4])
+            labels.append(ann[ii][4])
 
         boxes = torch.as_tensor(boxes, dtype=torch.float32)
         labels = torch.as_tensor(labels, dtype=torch.int64)
-        num_objs = torch.tensor([num_objs])
-        area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
         iscrowd = torch.zeros((num_objs,), dtype=torch.int64)
-        image_id = torch.tensor([idx])
+        num_objs = torch.Tensor([num_objs])
+        area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
+        image_id = torch.Tensor([idx])
 
         target = {}
         target["boxes"] = boxes
@@ -56,7 +71,7 @@ class Dataset(torch.utils.data.Dataset):
         return img, target
 
     def __len__(self):
-        return len(np.unique(self.ann[:, 0]))
+        return len(self.image_files)
 
 
 class VisdomLinePlotter(object):

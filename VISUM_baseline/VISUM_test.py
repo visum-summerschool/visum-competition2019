@@ -13,14 +13,14 @@ from engine import train_one_epoch, evaluate
 import utils
 import transforms as T
 from nms import nms
-from visum_utils import Dataset
+from visum_utils import VisumDataset
 
 
 REJECT_THRESHOLD = 0.5
 NMS_THRESHOLD = 0.1
-SAVED_MODEL = '/home/jtrp/VISUM_baseline/fasterRCNN_model'
-OUTPUT_FILE = '/home/jtrp/VISUM_baseline/predictions.csv'
-DATA_DIR = '/data/DB/VISUM_newdata_baseline/'
+SAVED_MODEL = '/home/master/VISUM_baseline/fasterRCNN_model'
+OUTPUT_FILE = '/home/master/VISUM_baseline/predictions.csv'
+DATA_DIR = '/home/master/dataset/train'
 
 
 def get_transform(train):
@@ -34,27 +34,25 @@ def get_transform(train):
     return T.Compose(transforms)
 
 # Load datasets
-dataset_test = Dataset(DATA_DIR, 'RGB', 'daily_test', transforms=get_transform(False))
-#dataset_test = Dataset(DATA_DIR, 'RGB', 'final_test', transforms=get_transform(False))
+test_data = VisumDataset(DATA_DIR, 'rgb', transforms=get_transform(False))
+#test_data = Dataset(DATA_DIR, 'RGB', 'final_test', transforms=get_transform(False))
 
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 model = torch.load(SAVED_MODEL)
 
-data_loader_test = torch.utils.data.DataLoader(
-    dataset_test, batch_size=1, shuffle=False, num_workers=4,
+test_loader = torch.utils.data.DataLoader(
+    test_data, batch_size=1, shuffle=False, num_workers=4,
     collate_fn=utils.collate_fn)
 
 predictions = list()
-for ii in range(dataset_test.n_imgs):
-    # pick one image from the test set
-    img, _ = dataset_test[ii]
+for i, img, _ in enumerate(test_loader):
     # put the model in evaluation mode
     model.eval()
     with torch.no_grad():
         prediction = model([img.to(device)])
-    
+
     boxes = np.array(prediction[0]['boxes'].cpu())
     labels = list(prediction[0]['labels'].cpu())
     scores = list(prediction[0]['scores'].cpu())

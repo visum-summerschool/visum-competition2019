@@ -39,7 +39,8 @@ class VisumData(Dataset):
             8: 'wallet', 9: 'watch', -1: 'n.a.'}
 
     def __getitem__(self, idx):
-        img = Image.open(os.path.join(self.path, self.image_files[idx]))
+        file_name = self.image_files[idx]
+        img = Image.open(os.path.join(self.path, file_name))
 
         ann_key = self.image_files[idx].replace('NIR', 'RGB')
         ann = self.annotations.get(ann_key, [])
@@ -56,19 +57,16 @@ class VisumData(Dataset):
         iscrowd = torch.zeros((num_objs,), dtype=torch.int64)
         num_objs = torch.Tensor([num_objs])
         area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
-        image_id = torch.Tensor([idx])
-
+        
         target = {}
         target["boxes"] = boxes
         target["labels"] = labels
-        target["image_id"] = image_id
         target["area"] = area
-        target["iscrowd"] = iscrowd
 
         if self.transforms is not None:
             img, target = self.transforms(img, target)
 
-        return img, target
+        return img, target, file_name
 
     def __len__(self):
         return len(self.image_files)

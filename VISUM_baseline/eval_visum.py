@@ -1,17 +1,29 @@
-
-#todo:
-# - confidance is being used to check for objects which are unknown, but also as a measure of confidance in the detection in the baseline. this is not a problem but it sucks as a method.
-
+# VISUM - Project
+# Script to evaluate predictions
+# 3 metrics are evaluated: 
+#       - MEAN AVERAGE PRECISION
+#       - AVERAGE PRECISION FOR UNKNOWN OBJECTS 
+#       - AVERAGE PRECISION FOR EMPTY CAR CLASSIFICATION
+# This script should let you test that your algorithm is creating predictions in the right format
+# Edit this file at your own risk
 
 import csv
 import numpy as np
 from matplotlib import pyplot as plt
 import os
+import argparse
 
-ground_truth_file = "/home/emcastro/Downloads/gt.csv"
-pred_file = "/home/emcastro/Downloads/predictions_wrong.csv"
-datase_dir = "/home/emcastro/test_daily/"
+paser = argparse.ArgumentParser()
+parser.add_argument("gt_path")
+parser.add_argument("preds_path")
+parser.add_argument("imgs_dir")
+parser.parse_args()
 
+ground_truth_file = args.gt_path
+pred_file = args.preds_path
+datase_dir = args.imgs_dir
+
+# Read csv file
 def read_file(path):
     out = []
     with open(path, "r") as file:
@@ -20,6 +32,7 @@ def read_file(path):
             out.append(line)
     return out
 
+# get IoU between two bounding boxes
 def get_iou(boxA, boxB):
 	# determine the (x, y)-coordinates of the intersection rectangle
 	xA = max(boxA[0], boxB[0])
@@ -43,11 +56,15 @@ def get_iou(boxA, boxB):
 	# return the intersection over union value
 	return iou
 
+# get ground-truth for a subset of classes
 def get_subset_gt(ground_truth, classes):
     obj_id = 0
     gt = dict()
+    # key is the image filename
     for key in ground_truth.keys():
+        # obj is an object in the scene
         for obj in ground_truth[key]:
+            # only consider the classes selected
             if obj[2] in classes:
                 if key not in gt:
                     gt[key] = []
@@ -57,6 +74,7 @@ def get_subset_gt(ground_truth, classes):
                 obj_id += 1
     return gt
 
+# get predictions for a subset of classes
 def get_subset_detections(detections, classes):
     list_dets = []
     for det in detections:
@@ -64,19 +82,27 @@ def get_subset_detections(detections, classes):
             list_dets.append(det)
     return list_dets
 
+# build a precision-recall curve
+# recall=TPs/num_of_objs
+# precision=TPs/num_of_detections
 def build_curve(ground_truth, detections, IoU_th):
-
+    # compute the number of objects in the ground_truth
     num_of_objs = 0
     for key in ground_truth:
         for item in ground_truth[key]:
             num_of_objs += 1
 
+    # create lists with the x, y values of the curve
     precision = [0.0]
     recall = [0.0]
 
+    # this flags mark object that have already been found. There cannot be 2 TPs for the same object
     already_found_flags = np.ones(num_of_objs)
     TPs = 0
     number_of_dets = 0
+
+    # for each detection test if it is a true positive or not
+    # add 1 to the number of detections
     for det in detections:
         img_name = det[0]
         det_bbox = det[1]
@@ -94,28 +120,34 @@ def build_curve(ground_truth, detections, IoU_th):
 
         number_of_dets += 1
 
+        #add one point to the curve
         precision.append(TPs / number_of_dets)
         recall.append(TPs / num_of_objs)
-
+    
+    # add a final point
     precision.append(0.0)
     recall.append(1.0)
     return precision, recall
 
+# Numeric integration of the curve
 def process_curve(precision, recall):
+    #remove zigzag
     for i in range(len(precision)-2, -1, -1):
         precision[i] = max(precision[i], precision[i+1])
 
+    #compute rectangles positions
     i_list = []
     for i in range(1, len(recall)):
         if recall[i] != recall[i-1]:
             i_list.append(i)
 
+    # integrate the curve
     ap = 0.0
     for i in i_list:
         ap += ((recall[i]-recall[i-1])*precision[i])
     return ap
 
-
+# Load the ground truth and predictions file
 def load_gt_and_dets(ground_truth_file, pred_file):
     ground_truth = dict()
     obj_id = 0
@@ -151,7 +183,8 @@ def metrics(ground_truth_file, pred_file):
 
     ground_truth, detections = load_gt_and_dets(ground_truth_file, pred_file)
     classes = [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-
+    
+    # compute MAP
     maps = []
     for c in classes:
         gt = get_subset_gt(ground_truth, [c])
@@ -164,6 +197,7 @@ def metrics(ground_truth_file, pred_file):
         maps.append(np.mean(aps))
     MAP = np.mean(maps)
 
+    # AP for unknown objects
     gt = get_subset_gt(ground_truth, [-1])
     dets = get_subset_detections(detections, [-1])
     aps = []
@@ -173,6 +207,7 @@ def metrics(ground_truth_file, pred_file):
         aps.append(ap)
     AP_unknown = np.mean(aps)
 
+    # AP for empty car
     num_of_objects = 0
     confidence = dict()
     files = [x for x in os.listdir(datase_dir) if x[-4::]==".jpg"]
@@ -206,19 +241,4 @@ def metrics(ground_truth_file, pred_file):
     AP_EMPTY = process_curve(precision, recall)
 
     return MAP, AP_unknown, AP_EMPTY
-
-values = metrics(ground_truth_file, pred_file)
-print(values)
-"""
-classes = [-1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-gt = get_subset_gt(ground_truth, classes)
-dets = get_subset_detections(detections, classes)
-precision, recall = build_curve(gt, dets, .5)
-#plt.plot(recall, precision)
-#plt.xlim(0, 1)
-#plt.ylim(0, 1)
-ap = process_curve(precision, recall)
-#plt.plot(recall, precision)
-print(ap)
-"""
 

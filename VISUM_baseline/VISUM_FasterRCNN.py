@@ -62,11 +62,11 @@ def main():
 
     # define training and validation data loaders
     data_loader = torch.utils.data.DataLoader(
-        dataset, batch_size=2, shuffle=True, num_workers=4,
+        dataset, batch_size=2, shuffle=True, num_workers=0,
         collate_fn=utils.collate_fn)
 
     data_loader_val = torch.utils.data.DataLoader(
-        dataset_val, batch_size=2, shuffle=False, num_workers=4,
+        dataset_val, batch_size=2, shuffle=False, num_workers=0,
         collate_fn=utils.collate_fn)
 
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')

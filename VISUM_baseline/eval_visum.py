@@ -5,23 +5,30 @@
 #       - AVERAGE PRECISION FOR UNKNOWN OBJECTS 
 #       - AVERAGE PRECISION FOR EMPTY CAR CLASSIFICATION
 # This script should let you test that your algorithm is creating predictions in the right format
-# Edit this file at your own risk
+# DO NOT CHANGE THIS SCRIPT
 
 import csv
 import numpy as np
-from matplotlib import pyplot as plt
 import os
 import argparse
 
-paser = argparse.ArgumentParser()
-parser.add_argument("gt_path")
-parser.add_argument("preds_path")
-parser.add_argument("imgs_dir")
-parser.parse_args()
+def main():
 
-ground_truth_file = args.gt_path
-pred_file = args.preds_path
-datase_dir = args.imgs_dir
+    parser = argparse.ArgumentParser(description='VISUM 2019 competition - evaluation script', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-g', '--gt_path', default='/home/master/dataset/test/annotation.csv', metavar='', help='test data directory path')
+    parser.add_argument('-p', '--preds_path', default='~/predictions.csv', metavar='', help='model file')
+    parser.add_argument('-d', '--imgs_dir', default='/home/master/dataset/test/', metavar='', help='output CSV file name')
+    args = vars(parser.parse_args())
+
+    ground_truth_file = args.gt_path
+    pred_file = args.preds_path
+    datase_dir = args.imgs_dir
+
+    scores = metrics(ground_truth_file, pred_file, datase_dir)
+    print("Scores for:", pred_file, ":", scores)
+    with open("~/scores.txt", "r") as file:
+        writer = csv.writer(file)
+        writer.writerow(scores)
 
 # Read csv file
 def read_file(path):
@@ -179,7 +186,7 @@ def load_gt_and_dets(ground_truth_file, pred_file):
 # - MAP - detection task
 # - AP for unknown objects - open set task
 # - AP for empty image
-def metrics(ground_truth_file, pred_file):
+def metrics(ground_truth_file, pred_file, datase_dir):
 
     ground_truth, detections = load_gt_and_dets(ground_truth_file, pred_file)
     classes = [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -242,3 +249,5 @@ def metrics(ground_truth_file, pred_file):
 
     return MAP, AP_unknown, AP_EMPTY
 
+if "__main__"==__name__:
+    main()

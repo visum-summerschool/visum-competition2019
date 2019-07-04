@@ -16,7 +16,7 @@ def main():
 
     parser = argparse.ArgumentParser(description='VISUM 2019 competition - evaluation script', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-g', '--gt_path', default='/home/master/dataset/test/annotation.csv', metavar='', help='test data directory path')
-    parser.add_argument('-p', '--preds_path', default='/home/visum/predictions.csv', metavar='', help='model file')
+    parser.add_argument('-p', '--preds_path', default='./predictions.csv', metavar='', help='model file')
     parser.add_argument('-d', '--imgs_dir', default='/home/master/dataset/test/', metavar='', help='output CSV file name')
     args = vars(parser.parse_args())
 
@@ -207,13 +207,16 @@ def metrics(ground_truth_file, pred_file, datase_dir):
 
     # AP for unknown objects
     gt = get_subset_gt(ground_truth, [-1])
-    dets = get_subset_detections(detections, [-1])
-    aps = []
-    for TH in np.arange(.5, 1.0, 0.05):
-        precision, recall = build_curve(gt, dets, TH)
-        ap = process_curve(precision, recall)
-        aps.append(ap)
-    AP_unknown = np.mean(aps)
+    if len(gt) == 0:
+        AP_unknown = -1
+    else:
+        dets = get_subset_detections(detections, [-1])
+        aps = []
+        for TH in np.arange(.5, 1.0, 0.05):
+            precision, recall = build_curve(gt, dets, TH)
+            ap = process_curve(precision, recall)
+            aps.append(ap)
+        AP_unknown = np.mean(aps)
 
     # AP for empty car
     num_of_objects = 0
@@ -227,6 +230,8 @@ def metrics(ground_truth_file, pred_file, datase_dir):
             empty[file] = 1
             num_of_objects +=1
         confidence[file] = 0
+    if num_of_objects == 0:
+        return MAP, AP_unknown, -1
 
     for det in detections:
         confidence[det[0]] = max(confidence[det[0]], det[3])
@@ -238,7 +243,6 @@ def metrics(ground_truth_file, pred_file, datase_dir):
     recall = []
     number_of_dets = 0
     for entry in confidence:
-        print(entry)
         if empty[entry[0]]:
             TPs+=1
         number_of_dets += 1

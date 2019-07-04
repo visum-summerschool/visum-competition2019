@@ -60,7 +60,6 @@ class VisumData(Dataset):
                 boxes = torch.as_tensor(boxes, dtype=torch.float32)
                 labels = torch.as_tensor(labels, dtype=torch.int64)
                 iscrowd = torch.zeros((num_objs,), dtype=torch.int64)
-                num_objs = torch.Tensor([num_objs])
                 area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
 
                 target = {}
@@ -68,6 +67,7 @@ class VisumData(Dataset):
                 target["boxes"] = boxes
                 target["labels"] = labels
                 target["area"] = area
+                target["iscrowd"] = iscrowd
             else:
                 target = None
         else:

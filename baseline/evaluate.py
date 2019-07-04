@@ -1,8 +1,8 @@
 # VISUM - Project
 # Script to evaluate predictions
-# 3 metrics are evaluated: 
+# 3 metrics are evaluated:
 #       - MEAN AVERAGE PRECISION
-#       - AVERAGE PRECISION FOR UNKNOWN OBJECTS 
+#       - AVERAGE PRECISION FOR UNKNOWN OBJECTS
 #       - AVERAGE PRECISION FOR EMPTY CAR CLASSIFICATION
 # This script should let you test that your algorithm is creating predictions in the right format
 # DO NOT CHANGE THIS SCRIPT
@@ -16,7 +16,7 @@ def main():
 
     parser = argparse.ArgumentParser(description='VISUM 2019 competition - evaluation script', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-g', '--gt_path', default='/home/master/dataset/test/annotation.csv', metavar='', help='test data directory path')
-    parser.add_argument('-p', '--preds_path', default='~/predictions.csv', metavar='', help='model file')
+    parser.add_argument('-p', '--preds_path', default='/home/visum/predictions.csv', metavar='', help='model file')
     parser.add_argument('-d', '--imgs_dir', default='/home/master/dataset/test/', metavar='', help='output CSV file name')
     args = vars(parser.parse_args())
 
@@ -98,7 +98,8 @@ def build_curve(ground_truth, detections, IoU_th):
     for key in ground_truth:
         for item in ground_truth[key]:
             num_of_objs += 1
-
+    if num_of_objs == 0:
+        return [0.0, 0.0], [0.0, 1.0]
     # create lists with the x, y values of the curve
     precision = [0.0]
     recall = [0.0]
@@ -130,7 +131,7 @@ def build_curve(ground_truth, detections, IoU_th):
         #add one point to the curve
         precision.append(TPs / number_of_dets)
         recall.append(TPs / num_of_objs)
-    
+
     # add a final point
     precision.append(0.0)
     recall.append(1.0)
@@ -190,7 +191,7 @@ def metrics(ground_truth_file, pred_file, datase_dir):
 
     ground_truth, detections = load_gt_and_dets(ground_truth_file, pred_file)
     classes = [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    
+
     # compute MAP
     maps = []
     for c in classes:

@@ -73,8 +73,6 @@ def main():
         for pred in predictions:
             # format of each row must be: file_name, x0, y0, x1, y1, label, confidence_score
             f.write("{},{},{},{},{},{},{}\n".format(pred[0], float(pred[1]), float(pred[2]), float(pred[3]), float(pred[4]), int(pred[5]), float(pred[6])))
-    
-    # np.savetxt(args['output'], predictions, delimiter=",", fmt="%s, %f, %f, %f, %f, %d")
 
 if __name__ == '__main__':
     main()

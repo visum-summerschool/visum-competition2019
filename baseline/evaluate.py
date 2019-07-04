@@ -26,7 +26,7 @@ def main():
 
     scores = metrics(ground_truth_file, pred_file, datase_dir)
     print("Scores for:", pred_file, ":", scores)
-    with open("~/scores.txt", "r") as file:
+    with open("./scores.txt", "w") as file:
         writer = csv.writer(file)
         writer.writerow(scores)
 

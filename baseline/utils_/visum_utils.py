@@ -56,6 +56,7 @@ class VisumData(Dataset):
                 labels.append(ann[ii][4])
 
             if num_objs > 0:
+                image_id = torch.tensor([idx])
                 boxes = torch.as_tensor(boxes, dtype=torch.float32)
                 labels = torch.as_tensor(labels, dtype=torch.int64)
                 iscrowd = torch.zeros((num_objs,), dtype=torch.int64)
@@ -63,6 +64,7 @@ class VisumData(Dataset):
                 area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
 
                 target = {}
+                target["image_id"] = image_id
                 target["boxes"] = boxes
                 target["labels"] = labels
                 target["area"] = area

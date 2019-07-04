@@ -20,9 +20,9 @@ def main():
     parser.add_argument('-d', '--imgs_dir', default='/home/master/dataset/test/', metavar='', help='output CSV file name')
     args = vars(parser.parse_args())
 
-    ground_truth_file = args.gt_path
-    pred_file = args.preds_path
-    datase_dir = args.imgs_dir
+    ground_truth_file = args["gt_path"]
+    pred_file = args["preds_path"]
+    datase_dir = args["imgs_dir"]
 
     scores = metrics(ground_truth_file, pred_file, datase_dir)
     print("Scores for:", pred_file, ":", scores)

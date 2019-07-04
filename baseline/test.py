@@ -36,7 +36,7 @@ def main():
         return T.Compose(transforms)
 
     # Load datasets
-    test_data = VisumData(args['data_path'], 'rgb', transforms=get_transform(False))
+    test_data = VisumData(args['data_path'], 'rgb', mode='test', transforms=get_transform(False))
 
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
@@ -71,7 +71,6 @@ def main():
 
     with open(args['output'], 'w') as f:
         for pred in predictions:
-            # format of each row must be: file_name, x0, y0, x1, y1, label, confidence_score
             f.write("{},{},{},{},{},{},{}\n".format(pred[0], float(pred[1]), float(pred[2]), float(pred[3]), float(pred[4]), int(pred[5]), float(pred[6])))
 
 if __name__ == '__main__':

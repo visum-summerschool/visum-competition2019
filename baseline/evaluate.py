@@ -13,7 +13,6 @@ import os
 import argparse
 
 def main():
-
     parser = argparse.ArgumentParser(description='VISUM 2019 competition - evaluation script', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-p', '--preds_path', default='./predictions.csv', metavar='', help='predictions file')
     parser.add_argument('-d', '--imgs_dir', default='/home/master/dataset/test/', metavar='', help='dataset directory')
@@ -25,9 +24,9 @@ def main():
 
     scores = metrics(ground_truth_file, pred_file, datase_dir)
     print("Scores for:", pred_file, ":")
-    print("  mAP@[0.5:0.95] = ", scores[0])
-    print("  AP unknown class = ", scores[1])
-    print("  AP empty car = ", scores[2])
+    print("  mAP@[0.5:0.95] =", scores[0])
+    print("  AP@[0.5:0.95] unknown class =", scores[1])
+    print("  AP empty car =", scores[2])
     with open("./scores.txt", "w") as file:
         writer = csv.writer(file)
         writer.writerow(scores)

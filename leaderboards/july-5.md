@@ -2,7 +2,7 @@
 
 || Team | mAP@[0.5:0.95] |
 | :---: | :---: | :---: |
-| 1 | BASELINE | 0.2080 |
+| 1 | BASELINE | 0.2420 |
 | 2 | team-1 | nan |
 | 3 | team-2 | nan |
 | 4 | team-3 | nan |
@@ -28,7 +28,7 @@
 
 || Team | AP@[0.5:0.95] for unknown objects |
 | :---: | :---: | :---: |
-| 1 | BASELINE | 0.0404 |
+| 1 | BASELINE | 0.0283 |
 | 2 | team-1 | nan |
 | 3 | team-2 | nan |
 | 4 | team-3 | nan |
@@ -54,7 +54,7 @@
 
 || Team | AP for empty car detection |
 | :---: | :---: | :---: |
-| 1 | BASELINE | 0.2339 |
+| 1 | BASELINE | 0.6414 |
 | 2 | team-1 | nan |
 | 3 | team-2 | nan |
 | 4 | team-3 | nan |

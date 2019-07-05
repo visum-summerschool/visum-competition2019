@@ -15,17 +15,19 @@ import argparse
 def main():
 
     parser = argparse.ArgumentParser(description='VISUM 2019 competition - evaluation script', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-g', '--gt_path', default='/home/master/dataset/test/annotation.csv', metavar='', help='test data directory path')
-    parser.add_argument('-p', '--preds_path', default='./predictions.csv', metavar='', help='model file')
-    parser.add_argument('-d', '--imgs_dir', default='/home/master/dataset/test/', metavar='', help='output CSV file name')
+    parser.add_argument('-p', '--preds_path', default='./predictions.csv', metavar='', help='predictions file')
+    parser.add_argument('-d', '--imgs_dir', default='/home/master/dataset/test/', metavar='', help='dataset directory')
     args = vars(parser.parse_args())
 
-    ground_truth_file = args["gt_path"]
     pred_file = args["preds_path"]
     datase_dir = args["imgs_dir"]
+    ground_truth_file = os.path.join(args["imgs_dir"], 'annotation.csv')
 
     scores = metrics(ground_truth_file, pred_file, datase_dir)
-    print("Scores for:", pred_file, ":", scores)
+    print("Scores for:", pred_file, ":")
+    print("  mAP@[0.5:0.95] = ", scores[0])
+    print("  AP unknown class = ", scores[1])
+    print("  AP empty car = ", scores[2])
     with open("./scores.txt", "w") as file:
         writer = csv.writer(file)
         writer.writerow(scores)

@@ -57,18 +57,18 @@ def main():
         labels = list(prediction[0]['labels'].cpu())
         scores = list(prediction[0]['scores'].cpu())
 
-        nms_boxes, nms_labels = nms(boxes, labels, NMS_THR)
+        nms_boxes, nms_labels, nms_scores = nms(boxes, labels, scores, NMS_THR)
 
         for bb in range(len(nms_labels)):
             pred = np.concatenate((list(file_names), list(nms_boxes[bb, :])))  # bounding box
-            if scores[bb] >= REJECT_THR:
+            if nms_scores[bb] >= REJECT_THR:
                 pred = np.concatenate((pred, [nms_labels[bb]]))  # object label
             else:
                 pred = np.concatenate((pred, [-1]))  # Rejects to classify
-            pred = np.concatenate((pred, [scores[bb]]))  # BEST CLASS SCORE
+            pred = np.concatenate((pred, [nms_scores[bb]]))  # BEST CLASS SCORE
             pred = list(pred)
             predictions.append(pred)
-
+    
     with open(args['output'], 'w') as f:
         for pred in predictions:
             f.write("{},{},{},{},{},{},{}\n".format(pred[0], float(pred[1]), float(pred[2]), float(pred[3]), float(pred[4]), int(pred[5]), float(pred[6])))

@@ -6,10 +6,10 @@
 import numpy as np
  
 # Malisiewicz et al.
-def nms(boxes, labels, overlapThresh):
+def nms(boxes, labels, scores, overlapThresh):
 	# if there are no boxes, return an empty list
 	if len(boxes) == 0:
-		return [], []
+		return [], [], []
  
 	# if the bounding boxes integers, convert them to floats --
 	# this is important since we'll be doing a bunch of divisions
@@ -60,4 +60,4 @@ def nms(boxes, labels, overlapThresh):
  
 	# return only the bounding boxes that were picked using the
 	# integer data type
-	return boxes[pick], np.array(labels)[pick]
+	return boxes[pick], np.array(labels)[pick], np.array(scores)[pick]

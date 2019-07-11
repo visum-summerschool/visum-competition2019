@@ -43,9 +43,9 @@ def main():
 
     # put the pieces together inside a FasterRCNN model
     model = FasterRCNN(backbone,
-                    num_classes=10,
-                    rpn_anchor_generator=anchor_generator,
-                    box_roi_pool=roi_pooler)
+                       num_classes=11,
+                       rpn_anchor_generator=anchor_generator,
+                       box_roi_pool=roi_pooler)
 
     # See the model architecture
     print(model)

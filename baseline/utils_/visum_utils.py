@@ -28,7 +28,7 @@ class VisumData(Dataset):
                 for row in csv.reader(csv_file, delimiter=','):
                     file_name = row[0]
                     obj = [float(value) for value in row[1:5]]
-                    obj.append(int(row[5]))
+                    obj.append(int(row[5]) + 1)
 
                     if file_name in self.annotations:
                         self.annotations[file_name].append(obj)
@@ -36,9 +36,10 @@ class VisumData(Dataset):
                         self.annotations[file_name] = [obj]
 
             self.class_names = {
-                0: 'book', 1: 'bottle', 2: 'box', 3: 'cellphone',
-                4: 'cosmetics', 5: 'glasses', 6: 'headphones', 7: 'keys',
-                8: 'wallet', 9: 'watch', -1: 'n.a.'}
+                0: 'background',
+                1: 'book', 2: 'bottle', 3: 'box', 4: 'cellphone',
+                5: 'cosmetics', 6: 'glasses', 7: 'headphones', 8: 'keys',
+                9: 'wallet', 10: 'watch', -1: 'n.a.'}
 
     def __getitem__(self, idx):
         file_name = self.image_files[idx]

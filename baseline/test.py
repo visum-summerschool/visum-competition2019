@@ -62,7 +62,7 @@ def main():
         for bb in range(len(nms_labels)):
             pred = np.concatenate((list(file_names), list(nms_boxes[bb, :])))  # bounding box
             if nms_scores[bb] >= REJECT_THR:
-                pred = np.concatenate((pred, [nms_labels[bb]]))  # object label
+                pred = np.concatenate((pred, [nms_labels[bb]-1]))  # object label
             else:
                 pred = np.concatenate((pred, [-1]))  # Rejects to classify
             pred = np.concatenate((pred, [nms_scores[bb]]))  # BEST CLASS SCORE

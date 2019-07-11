@@ -1,4 +1,4 @@
-# Daily Leaderboards (July 11)
+# Daily Leaderboards (July 11, 14h)
 
 || Team | mAP@[0.5:0.95] |
 | :---: | :---: | :---: |

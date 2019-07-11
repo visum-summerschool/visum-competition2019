@@ -1,4 +1,4 @@
-# Daily Leaderboards (July 11, 19h)
+# Daily Leaderboards (July 11)
 
 || Team | mAP@[0.5:0.95] |
 | :---: | :---: | :---: |
@@ -10,11 +10,11 @@
 | 6 | The Sardines | 0.3551 |
 | 7 | IVS@Porto | 0.3512 |
 | 8 | FBK | 0.3307 |
-| 9 | CleanMe | 0.3050 |
-| 10 | Sima | 0.2956 |
-| 11 | Dead Neurons | 0.2886 |
-| 12 | The best team | 0.2497 |
-| 13 | *BASELINE* | 0.2469 |
+| 9 | *BASELINE* | 0.3130 |
+| 10 | CleanMe | 0.3050 |
+| 11 | Sima | 0.2956 |
+| 12 | Dead Neurons | 0.2886 |
+| 13 | The best team | 0.2497 |
 | 14 | Iberia | 0.1449 |
 | 15 | As Francesinhas | 0.0042 |
 | 16 | Freedom Unlimited | 0.0000 |
@@ -24,12 +24,12 @@
 | 1 | Sima | 0.0488 |
 | 2 | As Francesinhas | 0.0462 |
 | 3 | IDK | 0.0386 |
-| 4 | FBK | 0.0329 |
-| 5 | Dead Neurons | 0.0236 |
-| 6 | Coffee breakers | 0.0214 |
-| 7 | The Sardines | 0.0138 |
-| 8 | IVS@Porto | 0.0064 |
-| 9 | *BASELINE* | 0.0058 |
+| 4 | *BASELINE* | 0.0374 |
+| 5 | FBK | 0.0329 |
+| 6 | Dead Neurons | 0.0236 |
+| 7 | Coffee breakers | 0.0214 |
+| 8 | The Sardines | 0.0138 |
+| 9 | IVS@Porto | 0.0064 |
 | 10 | Bananas | 0.0054 |
 | 11 | CleanMe | 0.0014 |
 | 12 | Freedom Unlimited | 0.0004 |
@@ -45,11 +45,11 @@
 | 3 | IVS@Porto | 0.7226 |
 | 4 | IDK | 0.7203 |
 | 5 | Bananas | 0.7062 |
-| 6 | Coffee breakers | 0.6944 |
-| 7 | The best team | 0.6084 |
-| 8 | As Francesinhas | 0.6056 |
-| 9 | The Sardines | 0.5873 |
-| 10 | *BASELINE* | 0.5842 |
+| 6 | *BASELINE* | 0.7047 |
+| 7 | Coffee breakers | 0.6944 |
+| 8 | The best team | 0.6084 |
+| 9 | As Francesinhas | 0.6056 |
+| 10 | The Sardines | 0.5873 |
 | 11 | Dead Neurons | 0.5195 |
 | 12 | Sima | 0.5011 |
 | 13 | FBK | 0.4950 |
